@@ -22,7 +22,7 @@ public class AboutDialogFx extends Dialog{
     }
 
     private void initComponents() {
-        setTitle("About GRASSMARLIN");
+        setTitle("About DarkPacket");
 
         GridPane layout = new GridPane();
 
@@ -32,7 +32,7 @@ public class AboutDialogFx extends Dialog{
 
         //Title
         Text textTitle = new Text();
-        textTitle.setText("GRASSMARLIN");
+        textTitle.setText("DarkPacket");
         textTitle.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 14.0));
         layout.add(textTitle, 1, 0, 2, 1);
 

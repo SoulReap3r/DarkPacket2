@@ -10,7 +10,7 @@ import java.util.Map;
 
 public final class Version {
     public static final String APPLICATION_VERSION = "3.2.1";
-    public static final String APPLICATION_TITLE = "GrassMarlin " + APPLICATION_VERSION;
+    public static final String APPLICATION_TITLE = "DarkPacket " + APPLICATION_VERSION;
     public static final int APPLICATION_REVISION = 26;
     public static final String FILENAME_USER_GUIDE = "GRASSMARLIN_User_Guide3.2.pdf";
 

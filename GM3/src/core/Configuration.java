@@ -98,11 +98,11 @@ public class Configuration {
         UI_VIEW_UPDATE_DELAY("ui.viewupdatedelay", () -> "1500"),
 
         // == Display Preferences =============================================
-        COLOR_NODE_NEW("colors.nodes.new", () -> "0000FF"),
-        COLOR_NODE_MODIFIED("colors.nodes.modified", () -> "00FF00"),
-        COLOR_NODE_BACKGROUND("colors.visualization.nodes.background", () -> "000000"),
-        COLOR_NODE_HIGHLIGHT("colors.visualization.nodes.background.highlighted", () -> "FFFF00"),
-        COLOR_NODE_TEXT("colors.visualization.nodes.text", () -> "FFFFFF"),
+        COLOR_NODE_NEW("colors.nodes.new", () -> "4a9eff"),
+        COLOR_NODE_MODIFIED("colors.nodes.modified", () -> "22d3ee"),
+        COLOR_NODE_BACKGROUND("colors.visualization.nodes.background", () -> "0d1526"),
+        COLOR_NODE_HIGHLIGHT("colors.visualization.nodes.background.highlighted", () -> "7dd4fc"),
+        COLOR_NODE_TEXT("colors.visualization.nodes.text", () -> "ffffff"),
 
         // == Other Preferences ===============================================
         LOGICAL_CREATE_DYNAMIC_SUBNETS("logical.use_dynamic_subnets", () -> "true"),

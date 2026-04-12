@@ -33,6 +33,14 @@ public class PacketHandler {
      * @return The amount of enqueued progress.
      */
     public int handle(final ByteBuffer bufPacket, final long msSinceEpoch, final int idxFrame) {
+        try {
+            return handleImpl(bufPacket, msSinceEpoch, idxFrame);
+        } catch (UnsatisfiedLinkError e) {
+            return 0;
+        }
+    }
+
+    private int handleImpl(final ByteBuffer bufPacket, final long msSinceEpoch, final int idxFrame) {
         final int cbPacket = bufPacket.limit() - bufPacket.position();
         int startCurrentHeader = bufPacket.position();
         //Link Layer (Only Ethernet supported)

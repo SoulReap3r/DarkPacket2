@@ -478,7 +478,12 @@ public class GrassMarlinFx extends Application{
         );
         fields.setBottom(statusbar);
 
-        stage.setScene(new Scene(fields));
+        Scene scene = new Scene(fields);
+        try {
+            String css = getClass().getResource("/css/darkpacket.css").toExternalForm();
+            scene.getStylesheets().add(css);
+        } catch (Exception e) { }
+        stage.setScene(scene);
     }
 
     private LivePCAPImport pcapCurrent = null;

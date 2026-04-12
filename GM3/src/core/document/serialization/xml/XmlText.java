@@ -1,6 +1,5 @@
 package core.document.serialization.xml;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,7 +29,7 @@ public class XmlText extends XmlElement {
     }
     @Override
     public XmlAttribute addAttribute(String name) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
     @Override
     public Collection<XmlAttribute> getAttributes() {

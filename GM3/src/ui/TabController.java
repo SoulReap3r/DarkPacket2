@@ -1,7 +1,6 @@
 package ui;
 
-import com.sun.javafx.scene.control.behavior.TabPaneBehavior;
-import com.sun.javafx.scene.control.skin.TabPaneSkin;
+import javafx.scene.control.skin.TabPaneSkin;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
@@ -99,12 +98,7 @@ public class TabController {
         closable.forEach(tab -> graphFromTabs.remove(tab));
         //close tabs
         closable.forEach(tab -> {
-            if (tab.getTabPane().getSkin() instanceof TabPaneSkin) {
-                TabPaneBehavior behavior = ((TabPaneSkin) tab.getTabPane().getSkin()).getBehavior();
-                if (behavior.canCloseTab(tab)) {
-                    behavior.closeTab(tab);
-                }
-            }
+            tab.getTabPane().getTabs().remove(tab);
         });
     }
 

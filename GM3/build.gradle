@@ -1,0 +1,158 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'application'
+}
+
+group = 'io.darkpacket'
+version = '2.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+// ─── JavaFX ────────────────────────────────────────────────────────────────
+javafx {
+    version = '21'
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.graphics', 'javafx.base', 'javafx.swing']
+}
+
+// ─── JAXB / XJC ────────────────────────────────────────────────────────────
+configurations {
+    xjc
+}
+
+def xjcOutputDir = layout.buildDirectory.dir('generated-sources/xjc/main')
+
+tasks.register('generateJaxb', JavaExec) {
+    group = 'build'
+    description = 'Generate core.fingerprint3 classes from fingerprint3.xsd'
+    classpath = configurations.xjc
+    mainClass = 'com.sun.tools.xjc.XJCFacade'
+    args = [
+        '-p', 'core.fingerprint3',
+        '-d', xjcOutputDir.get().asFile.absolutePath,
+        file('resource/xsd/fingerprint3.xsd').absolutePath
+    ]
+    inputs.file('resource/xsd/fingerprint3.xsd')
+    outputs.dir(xjcOutputDir)
+    doFirst { xjcOutputDir.get().asFile.mkdirs() }
+}
+
+// ─── ANTLR ────────────────────────────────────────────────────────────────
+generateGrammarSource {
+    arguments += ['-package', 'util.parser']
+    outputDirectory = layout.buildDirectory.dir('generated-sources/antlr/main/util/parser').get().asFile
+}
+
+// ─── Source Sets ──────────────────────────────────────────────────────────
+sourceSets {
+    main {
+        antlr {
+            srcDirs = ['resource/grammar']
+        }
+        java {
+            srcDir 'src'
+            srcDir xjcOutputDir
+            srcDir layout.buildDirectory.dir('generated-sources/antlr/main')
+        }
+        resources {
+            srcDir 'resource/images'
+            srcDir 'resource/xsd'
+            srcDir 'resource/css'
+        }
+    }
+}
+
+// Fix ANTLR duplicate path issue
+afterEvaluate {
+    def wrongRoot = layout.buildDirectory.dir('generated-sources/antlr/main/util/parser').get().asFile
+    sourceSets.main.java.srcDirs = sourceSets.main.java.srcDirs.findAll { it != wrongRoot }
+}
+
+compileJava.dependsOn(generateJaxb, generateGrammarSource)
+
+// ─── Java 17: export internal JavaFX packages needed by GRASSMARLIN ───────
+compileJava {
+    options.compilerArgs += [
+        '--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
+        '--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED',
+        '--add-exports=javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED',
+        '--add-exports=javafx.controls/com.sun.javafx.scene.control.skin=ALL-UNNAMED',
+    ]
+}
+
+// ─── Dependencies ─────────────────────────────────────────────────────────
+dependencies {
+    antlr "org.antlr:antlr4:4.13.2"
+    implementation "org.antlr:antlr4-runtime:4.13.2"
+
+    implementation fileTree(dir: 'lib', include: '*.jar')
+
+    implementation 'commons-io:commons-io:2.16.1'
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    runtimeOnly    'com.sun.xml.bind:jaxb-impl:2.3.9'
+
+    xjc 'com.sun.xml.bind:jaxb-xjc:2.3.9'
+    xjc 'com.sun.xml.bind:jaxb-impl:2.3.9'
+    xjc 'javax.xml.bind:jaxb-api:2.3.1'
+}
+
+// ─── Fat JAR ──────────────────────────────────────────────────────────────
+shadowJar {
+    archiveBaseName    = 'DarkPacket2'
+    archiveClassifier  = ''
+    archiveVersion     = ''
+
+    manifest {
+        attributes(
+            'Main-Class': 'util.Launcher',
+            'Permission' : 'High'
+        )
+    }
+
+    mergeServiceFiles()
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+// ─── Distribution ─────────────────────────────────────────────────────────
+tasks.register('assembleApp', Copy) {
+    group       = 'distribution'
+    description = 'Stage app in build/app/'
+    dependsOn shadowJar
+
+    into layout.buildDirectory.dir('app')
+
+    from(shadowJar.archiveFile) { rename { 'DarkPacket2.jar' } }
+    from('images')            { into 'images' }
+    from('data/fingerprint')  { into 'data/fingerprint' }
+    from('data/reference')    { into 'data/reference' }
+    from('data') {
+        include '*.csv'
+        into 'data'
+    }
+}
+
+// ─── Application ──────────────────────────────────────────────────────────
+application {
+    mainClass = 'util.Launcher'
+}
+
+tasks.named('run') {
+    jvmArgs = [
+        '--add-exports=javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
+        '--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED',
+        '--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
+        '--add-opens=javafx.base/com.sun.javafx.binding=ALL-UNNAMED',
+    ]
+}
