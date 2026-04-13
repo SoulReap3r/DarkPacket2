@@ -161,7 +161,7 @@ public class CellGroup<TNode extends INode<TNode>, TEdge extends IEdge<TNode>> e
     }
 
     protected void Handle_CoordinateChanged(ObservableValue<? extends Number> o, Number oldValue, Number newValue) {
-        rebuildHull();
+        Platform.runLater(this::rebuildHull);
     }
 
     protected static <TNode extends INode<TNode>> List<Double> BuildHullForCells(List<Cell<TNode>> cells, double padding) {
