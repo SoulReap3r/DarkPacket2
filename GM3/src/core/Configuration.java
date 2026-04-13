@@ -64,11 +64,19 @@ public class Configuration {
         PATH_MANUFACTURER_DB("path.wireshark.manuf", () -> {
             if(SystemUtils.IS_OS_WINDOWS) {
                 if (Configuration.getPreferenceString(Configuration.Fields.WIRESHARK_EXEC) != null) {
-                    return Paths.get(Paths.get(Configuration.getPreferenceString(Configuration.Fields.WIRESHARK_EXEC)).getParent().toString(), "manuf").toString();
+                    String parent = Paths.get(Configuration.getPreferenceString(Configuration.Fields.WIRESHARK_EXEC)).getParent().toString();
+                    String wka = Paths.get(parent, "wka").toString();
+                    if(new File(wka).exists()) {
+                        return wka;
+                    }
+                    return Paths.get(parent, "manuf").toString();
                 } else {
                     return null;
                 }
             } else {
+                for(String p : new String[]{"/usr/share/wireshark/wka", "/usr/share/wireshark/manuf"}) {
+                    if(new File(p).exists()) return p;
+                }
                 return "/usr/share/wireshark/manuf";
             }
         }),

@@ -115,7 +115,8 @@ shadowJar {
     manifest {
         attributes(
             'Main-Class': 'util.Launcher',
-            'Permission' : 'High'
+            'Permission' : 'High',
+            'Add-Opens'  : 'java.base/java.lang=ALL-UNNAMED java.base/java.lang.reflect=ALL-UNNAMED java.base/java.io=ALL-UNNAMED java.base/sun.nio.ch=ALL-UNNAMED java.base/java.util=ALL-UNNAMED'
         )
     }
 
@@ -139,6 +140,17 @@ tasks.register('assembleApp', Copy) {
         include '*.csv'
         into 'data'
     }
+
+    doLast {
+        def bat = layout.buildDirectory.file('app/DarkPacket2.bat').get().asFile
+        bat.text = '@echo off\r\njava' +
+            ' --add-opens=java.base/java.lang=ALL-UNNAMED' +
+            ' --add-opens=java.base/java.lang.reflect=ALL-UNNAMED' +
+            ' --add-opens=java.base/java.io=ALL-UNNAMED' +
+            ' --add-opens=java.base/sun.nio.ch=ALL-UNNAMED' +
+            ' --add-opens=java.base/java.util=ALL-UNNAMED' +
+            ' -jar DarkPacket2.jar\r\n'
+    }
 }
 
 // ─── Application ──────────────────────────────────────────────────────────
@@ -152,5 +164,10 @@ tasks.named('run') {
         '--add-exports=javafx.base/com.sun.javafx.binding=ALL-UNNAMED',
         '--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED',
         '--add-opens=javafx.base/com.sun.javafx.binding=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang=ALL-UNNAMED',
+        '--add-opens=java.base/java.lang.reflect=ALL-UNNAMED',
+        '--add-opens=java.base/java.io=ALL-UNNAMED',
+        '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED',
+        '--add-opens=java.base/java.util=ALL-UNNAMED',
     ]
 }
