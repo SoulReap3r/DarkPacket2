@@ -65,9 +65,7 @@ sourceSets {
             srcDir layout.buildDirectory.dir('generated-sources/antlr/main')
         }
         resources {
-            srcDir 'resource/images'
-            srcDir 'resource/xsd'
-            srcDir 'resource/css'
+            srcDir 'resource'
         }
     }
 }
